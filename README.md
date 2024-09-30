@@ -91,3 +91,16 @@ During your project review, we will focus on the following aspects:
 - As well as the necessary documentation to test the API with sample requests.
 
 Good luck and we look forward to reviewing your work!
+
+## Execute
+
+1. Initialize mysql service
+2. Add connection string with mongodb service in docker-compose.yml file
+3. Execute commands
+
+```bash
+npm install
+npm run test
+docker-compose build
+docket-composer up -d
+```
