@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+  # ----------- NestJS app -----------
+  app:
+    build: .
+    container_name: nestjs_app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongodb
+      - mysql
+      - redis
+    environment:
+      NODE_ENV: production
+      # MongoDB (para logs)
+      MONGO_URI: mongodb://mongodb:27017/logs
+
+      # MySQL
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: rootpassword
+      DATABASE_NAME: testdb
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 1
+
+    # Opcional en desarrollo: montar el código local dentro del contenedor
+    # volumes:
+    #   - .:/app
+
+  # ----------- MongoDB -----------
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+  # ----------- MySQL -----------
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: testdb
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # ----------- Redis -----------
+  redis:
+    image: redis:7.0
+    container_name: redis
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    restart: always
+
+volumes:
+  mongo_data:
+  mysql_data:
+  redis_data:

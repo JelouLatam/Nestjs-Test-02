@@ -6,10 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
-import { Task } from './entities/task.entity';
+import { Task, TaskStatus } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from '../auth/entities/user.entity';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @Injectable()
 export class TasksService {
@@ -29,10 +30,19 @@ export class TasksService {
     }
   }
 
-  async findAll(user: User): Promise<Task[]> {
+  async findAll(
+    user: User,
+    paginationQuery?: PaginationQueryDto,
+  ): Promise<Task[]> {
     try {
+      const page = paginationQuery?.page || 1;
+      const limit = paginationQuery?.limit || 10;
+      const skip = (page - 1) * limit;
+
       return await this.taskRepository.find({
         where: { user, deletedAt: IsNull() },
+        skip,
+        take: limit,
       });
     } catch (error) {
       throw new InternalServerErrorException('Error retrieving tasks.');
@@ -81,7 +91,6 @@ export class TasksService {
       if (!task) {
         throw new NotFoundException(`Task with ID ${id} not found.`);
       }
-
       await this.taskRepository.softRemove(task);
     } catch (error) {
       throw new InternalServerErrorException('Error deleting task.');
@@ -90,14 +99,53 @@ export class TasksService {
 
   async restore(id: string, user: User): Promise<Task> {
     try {
-      const task = await this.taskRepository.restore(id);
-      if (!task) {
+      // restore() devuelve un UpdateResult. Verificamos si se afectó alguna fila.
+      const result = await this.taskRepository.restore(id);
+      if (!result.affected) {
         throw new NotFoundException(`Task with ID ${id} not found.`);
       }
 
       return this.findOne(id, user);
     } catch (error) {
       throw new InternalServerErrorException('Error restoring task.');
+    }
+  }
+
+  async updateStatus(
+    id: string,
+    status: TaskStatus,
+    user: User,
+  ): Promise<Task> {
+    try {
+      const task = await this.findOne(id, user);
+      task.status = status;
+      return await this.taskRepository.save(task);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating task status.');
+    }
+  }
+
+  async getStats(user: User): Promise<{ completed: number; pending: number }> {
+    try {
+      const completed = await this.taskRepository.count({
+        where: {
+          user,
+          status: TaskStatus.COMPLETED,
+          deletedAt: IsNull(),
+        },
+      });
+
+      const pending = await this.taskRepository.count({
+        where: {
+          user,
+          status: TaskStatus.PENDING,
+          deletedAt: IsNull(),
+        },
+      });
+
+      return { completed, pending };
+    } catch (error) {
+      throw new InternalServerErrorException('Error retrieving tasks stats.');
     }
   }
 }

@@ -11,6 +11,7 @@ import {
   UseGuards,
   Req,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -19,35 +20,27 @@ import { Task } from './entities/task.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedRequest } from 'src/auth/interfaces/authenticated-request.interface';
 import { CacheKey, CacheInterceptor } from '@nestjs/cache-manager';
-// import { TestService } from './test.service';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { TaskStatus } from './entities/task.entity';
 
+@ApiTags('tasks')
+@ApiBearerAuth()
 @Controller('api/tasks')
 @UseGuards(AuthGuard('jwt'))
 @UseInterceptors(CacheInterceptor)
 export class TasksController {
-  constructor(
-    private readonly tasksService: TasksService,
-    // private readonly testService: TestService,
-  ) {}
+  constructor(private readonly tasksService: TasksService) {}
 
-  /**
-   * Create a new task for the authenticated user
-   *
-   * @endpoint POST /tasks
-   *
-   * @payload
-   * {
-   *   "title": "Task title",
-   *   "description": "Optional task description",
-   *   "status": "pending"
-   * }
-   *
-   * @header
-   * Authorization: Bearer <jwt_token>
-   *
-   * @returns {Task} The created task assigned to the authenticated user
-   */
   @Post()
+  @ApiOperation({ summary: 'Create a new task' })
+  @ApiResponse({ status: 201, description: 'Task created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid data' })
   create(
     @Body() createTaskDto: CreateTaskDto,
     @Req() req: AuthenticatedRequest,
@@ -55,44 +48,21 @@ export class TasksController {
     return this.tasksService.create(createTaskDto, req.user);
   }
 
-  /**
-   * Get all tasks for the authenticated user
-   *
-   * @endpoint GET /tasks
-   *
-   * @header
-   * Authorization: Bearer <jwt_token>
-   *
-   * @returns {Task[]} List of tasks belonging to the authenticated user
-   */
   @Get()
   @CacheKey('tasks-list')
-  findAll(@Req() req: AuthenticatedRequest): Promise<Task[]> {
-    return this.tasksService.findAll(req.user);
+  @ApiOperation({ summary: 'Get all tasks for the authenticated user' })
+  @ApiResponse({ status: 200, description: 'List of tasks' })
+  findAll(
+    @Req() req: AuthenticatedRequest,
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Promise<Task[]> {
+    return this.tasksService.findAll(req.user, paginationQuery);
   }
 
-  // @Get('test-cache')
-  // async redisTest() {
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  //   const savedValue: any = await this.testService.testRedisCache();
-  //   return {
-  //     message: `Se guardó en Redis la clave 'testKey' con valor: ${savedValue}`,
-  //   };
-  // }
-
-  /**
-   * Get a specific task by ID for the authenticated user
-   *
-   * @endpoint GET /tasks/:id
-   *
-   * @param {string} id - The ID of the task
-   *
-   * @header
-   * Authorization: Bearer <jwt_token>
-   *
-   * @returns {Task} The requested task (if it belongs to the authenticated user)
-   */
   @Get(':id')
+  @ApiOperation({ summary: 'Get a task by ID' })
+  @ApiResponse({ status: 200, description: 'Task found' })
+  @ApiResponse({ status: 404, description: 'Task not found' })
   findOne(
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
@@ -100,26 +70,10 @@ export class TasksController {
     return this.tasksService.findOne(id, req.user);
   }
 
-  /**
-   * Update a task by ID for the authenticated user
-   *
-   * @endpoint PUT /tasks/:id
-   *
-   * @param {string} id - The ID of the task
-   *
-   * @payload
-   * {
-   *   "title": "Updated title",
-   *   "description": "Updated description",
-   *   "status": "completed"
-   * }
-   *
-   * @header
-   * Authorization: Bearer <jwt_token>
-   *
-   * @returns {Task} The updated task
-   */
   @Put(':id')
+  @ApiOperation({ summary: 'Update a task by ID' })
+  @ApiResponse({ status: 200, description: 'Task updated successfully' })
+  @ApiResponse({ status: 404, description: 'Task not found' })
   update(
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
@@ -128,16 +82,9 @@ export class TasksController {
     return this.tasksService.update(id, updateTaskDto, req.user);
   }
 
-  /**
-   * Soft delete a task (mark as deleted)
-   *
-   * @endpoint DELETE /tasks/:id
-   *
-   * @header Authorization: Bearer <jwt_token>
-   *
-   * @returns {void} Task is marked as deleted
-   */
   @Delete(':id')
+  @ApiOperation({ summary: 'Soft delete a task' })
+  @ApiResponse({ status: 200, description: 'Task deleted successfully' })
   remove(
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
@@ -145,20 +92,35 @@ export class TasksController {
     return this.tasksService.remove(id, req.user);
   }
 
-  /**
-   * Restore a deleted task
-   *
-   * @endpoint PATCH /tasks/:id/restore
-   *
-   * @header Authorization: Bearer <jwt_token>
-   *
-   * @returns {Task} Restored task
-   */
   @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore a deleted task' })
+  @ApiResponse({ status: 200, description: 'Task restored successfully' })
   restore(
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
   ): Promise<Task> {
     return this.tasksService.restore(id, req.user);
+  }
+
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Mark a task as completed or pending' })
+  @ApiResponse({ status: 200, description: 'Task status updated successfully' })
+  @ApiResponse({ status: 404, description: 'Task not found' })
+  updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: TaskStatus,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<Task> {
+    return this.tasksService.updateStatus(id, status, req.user);
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Get stats of tasks (completed vs pending)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns completed and pending tasks count',
+  })
+  getStats(@Req() req: AuthenticatedRequest) {
+    return this.tasksService.getStats(req.user);
   }
 }

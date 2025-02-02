@@ -16,12 +16,21 @@ export class LoggerMiddleware implements NestMiddleware {
     );
 
     this.logger = createLogger({
+      exceptionHandlers: [
+        new transports.File({ filename: 'logs/exceptions.log' }),
+      ],
+      rejectionHandlers: [
+        new transports.File({ filename: 'logs/rejections.log' }),
+      ],
       format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.json(),
       ),
       transports: [
-        new transports.File({ filename: 'logs/http.log', level: 'info' }),
+        new transports.File({
+          filename: 'logs/http.log',
+          level: 'info',
+        }),
 
         ...(mongoUri
           ? [
@@ -37,26 +46,18 @@ export class LoggerMiddleware implements NestMiddleware {
   }
 
   use(req: Request, res: Response, next: NextFunction) {
-    const {
-      method,
-      url,
-      headers,
-      body,
-    }: {
-      method: string;
-      url: string;
-      headers: Record<string, any>;
-      body: Partial<Request['body']>;
-    } = req;
+    const start = Date.now();
+    const { method, url, headers, body } = req;
 
     res.on('finish', () => {
+      const duration = Date.now() - start;
       this.logger.info({
         method,
         url,
         status: res.statusCode,
         headers,
         body,
-        timestamp: new Date().toISOString(),
+        duration,
       });
     });
 
