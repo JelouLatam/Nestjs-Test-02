@@ -50,6 +50,9 @@ export class TasksService {
       }
       return task;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Error retrieving task.');
     }
   }
