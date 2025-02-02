@@ -9,6 +9,7 @@ import { Task, TaskStatus } from '../entities/task.entity';
 import { AuthenticatedRequest } from '../../auth/interfaces/authenticated-request.interface';
 import { User } from 'src/auth/entities/user.entity';
 import { CacheModule } from '@nestjs/cache-manager';
+import { PaginationQueryDto } from '../dto/pagination-query.dto';
 
 describe('TasksController', () => {
   let tasksController: TasksController;
@@ -85,7 +86,12 @@ describe('TasksController', () => {
   it('debería obtener todas las tareas', async () => {
     const req = { user: mockUser } as AuthenticatedRequest;
 
-    await expect(tasksController.findAll(req)).resolves.toEqual([mockTask]);
+    await expect(
+      tasksController.findAll(req, {
+        limit: 10,
+        page: 1,
+      } as PaginationQueryDto),
+    ).resolves.toEqual([mockTask]);
   });
 
   it('debería obtener una tarea por ID', async () => {
