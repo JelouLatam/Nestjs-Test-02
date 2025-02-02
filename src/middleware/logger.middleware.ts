@@ -37,7 +37,17 @@ export class LoggerMiddleware implements NestMiddleware {
   }
 
   use(req: Request, res: Response, next: NextFunction) {
-    const { method, url, headers, body } = req;
+    const {
+      method,
+      url,
+      headers,
+      body,
+    }: {
+      method: string;
+      url: string;
+      headers: Record<string, any>;
+      body: Partial<Request['body']>;
+    } = req;
 
     res.on('finish', () => {
       this.logger.info({

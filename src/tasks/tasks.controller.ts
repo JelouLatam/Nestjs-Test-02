@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   Controller,
   Get,
@@ -9,6 +10,7 @@ import {
   Patch,
   UseGuards,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -16,12 +18,17 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedRequest } from 'src/auth/interfaces/authenticated-request.interface';
-import { CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { CacheKey, CacheInterceptor } from '@nestjs/cache-manager';
+// import { TestService } from './test.service';
 
 @Controller('api/tasks')
-@UseGuards(AuthGuard('jwt')) // Protege todos los endpoints con JWT
+@UseGuards(AuthGuard('jwt'))
+@UseInterceptors(CacheInterceptor)
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    // private readonly testService: TestService,
+  ) {}
 
   /**
    * Create a new task for the authenticated user
@@ -60,10 +67,18 @@ export class TasksController {
    */
   @Get()
   @CacheKey('tasks-list')
-  @CacheTTL(30)
   findAll(@Req() req: AuthenticatedRequest): Promise<Task[]> {
     return this.tasksService.findAll(req.user);
   }
+
+  // @Get('test-cache')
+  // async redisTest() {
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //   const savedValue: any = await this.testService.testRedisCache();
+  //   return {
+  //     message: `Se guardó en Redis la clave 'testKey' con valor: ${savedValue}`,
+  //   };
+  // }
 
   /**
    * Get a specific task by ID for the authenticated user
