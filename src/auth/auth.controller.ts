@@ -21,6 +21,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'User logged in successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   login(@Body() authDto: AuthDto) {
+    // console.log('Auth DTO received:', authDto);
     return this.authService.login(authDto);
   }
 }

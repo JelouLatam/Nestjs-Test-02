@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async register(email: string, password: string): Promise<User> {
-    const hashedPassword: string = (await bcrypt.hash(password, 10)) as string; // ✅ Definir el tipo explícito
+    const hashedPassword: string = (await bcrypt.hash(password, 10)) as string;
 
     const user: User = this.userRepository.create({
       email,
@@ -28,12 +28,22 @@ export class AuthService {
   async login(authDto: AuthDto): Promise<{ access_token: string }> {
     const { email, password, expiresIn } = authDto;
 
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (!user || !(await user.validatePassword(password))) {
+    // console.log('Login request for email:', email);
+
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password'],
+    });
+    // console.log('User from DB:', user);
+
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Convertir expiración a segundos
+    if (!(await user.validatePassword(password))) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const expirationMap = { '10d': '10d', '6m': '180d', '1y': '365d' };
     const token = this.jwtService.sign(
       { email: user.email, sub: user.id },

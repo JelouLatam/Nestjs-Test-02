@@ -1,5 +1,7 @@
 # 📝 ToDo API - NestJS
 
+![ToDo API](assets/img/TASKS.jpeg)
+
 This project is a **ToDo List API** built with **NestJS**, featuring authentication, task management, and integration with **MySQL**, **MongoDB** (for logs), and **Redis** (for caching). Additionally, it logs requests and response times locally in files for better debugging and monitoring.
 
 ---
