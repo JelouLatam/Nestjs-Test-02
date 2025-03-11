@@ -85,7 +85,7 @@ During your project review, we will focus on the following aspects:
 
 ## Test Delivery
 
-- The source code must be delivered through a pull request to the `master` branch of this repository.
+- Deliver your source code by forking the repository provided for the test.
 - The name of the branch must follow the following convention: `test/person-name`.
 - Add clear instructions on how to run and test the application to the end of the `README.md` file.
 - As well as the necessary documentation to test the API with sample requests.
