@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, Query, HttpStatus } from '@nestjs/common';
+
+import { CreateTaskDto, UpdateTaskDto, UpdateStatusDto } from './dto';
+import { Task, TaskStatus } from '../domain';
 import { TaskService } from '../application/task.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
 import { ResponseModel } from '../../../shared/response.model';
-import { Task } from '../domain/task.entity';
+
 
 @Controller('tasks')
 export class TaskController {
@@ -16,9 +17,16 @@ export class TaskController {
   }
 
   @Get()
-  async findAll(@Query('status') status?: 'pending' | 'completed') {
+  async findAll(@Query('status') status?: TaskStatus) {
     const tasks = await this.taskService.findAll(status);
     return new ResponseModel<Task[]>(HttpStatus.OK, 'Tasks retrieved successfully', tasks);
+  }
+
+  @Get('status-count')
+  async getStatusCount() {
+    const completed = await this.taskService.countByStatus(TaskStatus.COMPLETED);
+    const pending = await this.taskService.countByStatus(TaskStatus.PENDING);
+    return new ResponseModel(HttpStatus.OK, 'Task status count', { completed, pending });
   }
 
   @Get(':id')
@@ -37,5 +45,11 @@ export class TaskController {
   async remove(@Param('id') id: number) {
     await this.taskService.remove(id);
     return new ResponseModel<null>(HttpStatus.OK, 'Task deleted successfully');
+  }
+
+  @Patch(':id/status')
+  async updateStatus(@Param('id') id: number, @Body() updateStatusDto: UpdateStatusDto) {
+    const task = await this.taskService.update(id, updateStatusDto);
+    return new ResponseModel<Task>(HttpStatus.OK, 'Task status updated successfully', task);
   }
 }

@@ -1,4 +1,5 @@
 import { IsString, IsOptional, Length, IsIn } from 'class-validator';
+import { TaskStatus } from '../../domain/task-status.enum';
 
 export class UpdateTaskDto {
   @IsOptional()
@@ -12,6 +13,6 @@ export class UpdateTaskDto {
   description?: string;
 
   @IsOptional()
-  @IsIn(['pending', 'completed'])
-  status?: 'pending' | 'completed';
+  @IsIn([TaskStatus.PENDING, TaskStatus.COMPLETED])
+  status?: TaskStatus;
 }

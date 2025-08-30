@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { TaskStatus } from './task-status.enum';
 
 @Entity('tasks')
 export class Task {
@@ -11,8 +12,8 @@ export class Task {
   @Column({ nullable: true })
   description?: string;
 
-  @Column({ type: 'enum', enum: ['pending', 'completed'], default: 'pending' })
-  status: 'pending' | 'completed';
+  @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.PENDING })
+  status: TaskStatus;
 
   @CreateDateColumn()
   createdAt: Date;
