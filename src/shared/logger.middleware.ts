@@ -1,5 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { winstonLogger } from './winston.logger';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -8,7 +9,13 @@ export class LoggerMiddleware implements NestMiddleware {
     const start = Date.now();
     res.on('finish', () => {
       const duration = Date.now() - start;
-      console.log(`[${method}] ${originalUrl} - ${res.statusCode} (${duration}ms)`);
+      const logMessage = `[${method}] ${originalUrl} - ${res.statusCode} (${duration}ms)`;
+      winstonLogger.info(logMessage, {
+        method,
+        url: originalUrl,
+        statusCode: res.statusCode,
+        duration,
+      });
     });
     next();
   }
