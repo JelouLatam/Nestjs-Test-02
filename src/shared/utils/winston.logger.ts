@@ -12,7 +12,10 @@ export const winstonLogger = createLogger({
   format: combine(timestamp(), errors({ stack: true }), logFormat),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: 'logs/app.log' }),
+    new transports.File({
+      filename: 'logs/app.log',
+      format: format.combine(format.timestamp(), format.json()),
+    }),
     new transports.MongoDB({
       db: process.env.MONGO_URI || 'mongodb://localhost:27017/nest_logs',
       collection: 'logs',
