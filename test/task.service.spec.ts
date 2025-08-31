@@ -66,6 +66,7 @@ describe('TaskService', () => {
       expect(result.length).toBeGreaterThan(0);
       expect(mockTaskRepo.find).toHaveBeenCalled();
     });
+    
     it('should find all tasks by status', async () => {
       mockTaskRepo.find.mockResolvedValue([
         { id: 2, title: 'Test2', status: TaskStatus.COMPLETED } as Task,
@@ -90,6 +91,7 @@ describe('TaskService', () => {
       expect(result).toEqual(mockTask);
       expect(mockTaskRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
     });
+
     it('should throw NotFoundException if task not found', async () => {
       mockTaskRepo.findOne.mockResolvedValue(undefined);
       await expect(service.findOne(999)).rejects.toThrow('Task not found');
@@ -130,6 +132,7 @@ describe('TaskService', () => {
       expect(mockCache.del).toHaveBeenCalledWith('/tasks');
       expect(mockCache.del).toHaveBeenCalledWith('/tasks/1');
     });
+
     it('should throw NotFoundException when removing non-existent task', async () => {
       mockTaskRepo.delete.mockResolvedValue({ affected: 0 });
       await expect(service.remove(999)).rejects.toThrow('Task not found');
