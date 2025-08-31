@@ -18,7 +18,7 @@ export class Task {
   @Column({ nullable: true })
   description?: string;
 
-  @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.PENDING })
+  @Column({ type: 'text', default: TaskStatus.PENDING })
   status: TaskStatus;
 
   @CreateDateColumn()
