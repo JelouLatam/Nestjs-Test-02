@@ -9,6 +9,7 @@ services:
     depends_on:
       - db
       - mongo
+      - redis
     environment:
       DB_HOST: db
       DB_PORT: 3306
@@ -16,6 +17,14 @@ services:
       DB_PASSWORD: example
       DB_NAME: todo_db
       MONGO_URI: mongodb://mongo:27017/nest_logs
+      REDIS_HOST: redis
+  redis:
+    image: redis:7.2
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
   db:
     image: mysql:8.0
     restart: always
@@ -36,3 +45,4 @@ services:
 volumes:
   db_data:
   mongo_data:
+  redis_data:
