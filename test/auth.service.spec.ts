@@ -3,7 +3,6 @@ import { AuthService } from '../src/modules/auth/application/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../src/modules/auth/domain/user.entity';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
 const mockUser = {
@@ -28,7 +27,6 @@ const mockJwtService = {
 describe('AuthService', () => {
   let service: AuthService;
   let userRepository: typeof mockUserRepository;
-  let jwtService: typeof mockJwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -41,7 +39,6 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     userRepository = module.get(getRepositoryToken(User));
-    jwtService = module.get(JwtService);
   });
 
   afterEach(() => {
