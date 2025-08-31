@@ -12,14 +12,23 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body(new ValidationPipe({ whitelist: true })) loginUserDto: LoginUserDto) {
+  async login(
+    @Body(new ValidationPipe({ whitelist: true })) loginUserDto: LoginUserDto,
+  ) {
     const result = await this.authService.login(loginUserDto);
     return new ResponseModel(HttpStatus.OK, 'Login successful', result);
   }
 
   @Post('register')
-  async register(@Body(new ValidationPipe({ whitelist: true })) registerUserDto: RegisterUserDto) {
+  async register(
+    @Body(new ValidationPipe({ whitelist: true }))
+    registerUserDto: RegisterUserDto,
+  ) {
     const result = await this.authService.register(registerUserDto);
-    return new ResponseModel(HttpStatus.CREATED, 'User registered successfully', result);
+    return new ResponseModel(
+      HttpStatus.CREATED,
+      'User registered successfully',
+      result,
+    );
   }
 }

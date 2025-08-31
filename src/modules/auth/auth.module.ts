@@ -17,7 +17,7 @@ import { ConfigModule } from '@nestjs/config';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
-  TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User]),
   ],
   providers: [AuthService, JwtStrategy, LocalStrategy],
   controllers: [AuthController],

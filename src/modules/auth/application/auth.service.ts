@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,11 +27,21 @@ export class AuthService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async validateUser(user: LoginUserDto): Promise<any> {
+  async validateUser(
+    user: LoginUserDto,
+  ): Promise<Omit<User, 'password'> | null> {
     const foundUser = await this.findOne(user.username);
-    if (foundUser && await bcrypt.compare(user.password, foundUser.password)) {
-      const { password, ...result } = foundUser;
-      return result;
+    if (
+      foundUser &&
+      (await bcrypt.compare(user.password, foundUser.password))
+    ) {
+      return {
+        id: foundUser.id,
+        username: foundUser.username,
+        email: foundUser.email,
+        firstName: foundUser.firstName,
+        lastName: foundUser.lastName,
+      };
     }
     return null;
   }
@@ -66,6 +80,10 @@ export class AuthService {
       lastName,
     });
     const savedUser = await this.userRepository.save(user);
-    return { id: savedUser.id, username: savedUser.username, email: savedUser.email };
+    return {
+      id: savedUser.id,
+      username: savedUser.username,
+      email: savedUser.email,
+    };
   }
 }
