@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 
-import { ApiError, mapValidationErrors } from './api-error.model';
-import { ResponseModel } from './response.model';
-import { HttpExceptionResponse } from './http-exception-response.model';
-import { winstonLogger } from './winston.logger';
+import { ApiError, mapValidationErrors } from '../models/api-error.model';
+import { ResponseModel } from '../models/response.model';
+import { HttpExceptionResponse } from '../models/http-exception-response.model';
+import { winstonLogger } from '../utils/winston.logger';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {

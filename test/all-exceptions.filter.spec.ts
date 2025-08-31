@@ -1,10 +1,10 @@
-import { AllExceptionsFilter } from '../src/shared/all-exceptions.filter';
+import { AllExceptionsFilter } from '../src/shared/filters/all-exceptions.filter';
 import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { Request, Response } from 'express';
-import { ApiError } from '../src/shared/api-error.model';
-import { HttpExceptionResponse } from '../src/shared/http-exception-response.model';
-import { winstonLogger } from '../src/shared/winston.logger';
+import { ApiError } from '../src/shared/models/api-error.model';
+import { HttpExceptionResponse } from '../src/shared/models/http-exception-response.model';
+import { winstonLogger } from '../src/shared/utils/winston.logger';
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter;
@@ -149,7 +149,7 @@ describe('AllExceptionsFilter', () => {
       }),
     );
   });
-  
+
   it('should handle HttpException with object response and no valid message', () => {
     const exception = new HttpException(
       { error: 'Custom Error', message: undefined },
@@ -166,7 +166,7 @@ describe('AllExceptionsFilter', () => {
   });
 
   it('should handle HttpException with response not string or object', () => {
-    const exception = new HttpException(12345 as any, HttpStatus.BAD_REQUEST);
+    const exception = new HttpException('12345', HttpStatus.BAD_REQUEST);
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(

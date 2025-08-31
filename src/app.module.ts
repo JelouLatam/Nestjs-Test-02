@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TaskController } from './modules/tasks/presentation/task.controller';
 import { TaskService } from './modules/tasks/application/task.service';
 import { Task } from './modules/tasks/domain/task.entity';
-import { LoggerMiddleware } from './shared/logger.middleware';
+import { LoggerMiddleware } from './shared/middlewares/logger.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
 

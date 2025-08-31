@@ -3,13 +3,10 @@ import { TaskService } from '../src/modules/tasks/application/task.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Task, TaskStatus } from '../src/modules/tasks/domain/index';
 
-import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Repository } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('TaskService', () => {
   let service: TaskService;
-  let taskRepo: Repository<Task>;
-  let cacheManager: Cache;
 
   const mockTaskRepo = {
     create: jest.fn(),
@@ -40,8 +37,6 @@ describe('TaskService', () => {
     }).compile();
 
     service = module.get<TaskService>(TaskService);
-    taskRepo = module.get<Repository<Task>>(getRepositoryToken(Task));
-    cacheManager = module.get<Cache>(CACHE_MANAGER);
   });
 
   describe('create', () => {

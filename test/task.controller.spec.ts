@@ -5,7 +5,7 @@ import { CreateTaskDto } from '../src/modules/tasks/presentation/dto/create-task
 import { UpdateTaskDto } from '../src/modules/tasks/presentation/dto/update-task.dto';
 import { UpdateStatusDto } from '../src/modules/tasks/presentation/dto/update-status.dto';
 import { Task, TaskStatus } from '../src/modules/tasks/domain';
-import { ResponseModel } from '../src/shared/response.model';
+import { ResponseModel } from '../src/shared/models/response.model';
 import { NotFoundException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 

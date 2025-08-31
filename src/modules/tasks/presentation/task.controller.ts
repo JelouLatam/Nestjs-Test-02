@@ -15,7 +15,7 @@ import {
 import { CreateTaskDto, UpdateTaskDto, UpdateStatusDto } from './dto';
 import { Task, TaskStatus } from '../domain';
 import { TaskService } from '../application/task.service';
-import { ResponseModel } from '../../../shared/response.model';
+import { ResponseModel } from '../../../shared/models/response.model';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('tasks')
