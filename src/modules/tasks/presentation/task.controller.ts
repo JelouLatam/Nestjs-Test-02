@@ -42,18 +42,18 @@ export class TaskController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    const { tasks, total } = await this.taskService.findAll(status, page, limit);
-    return new ResponseModel(
-      HttpStatus.OK,
-      'Tasks retrieved successfully',
-      {
-        tasks,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+    const { tasks, total } = await this.taskService.findAll(
+      status,
+      page,
+      limit,
     );
+    return new ResponseModel(HttpStatus.OK, 'Tasks retrieved successfully', {
+      tasks,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    });
   }
 
   @Get('status-count')

@@ -73,15 +73,15 @@ describe('TaskController', () => {
   });
 
   it('should get all tasks', async () => {
-  const result = await controller.findAll(undefined, 1, 10);
-  expect(service.findAll).toHaveBeenCalledWith(undefined, 1, 10);
-  expect(result).toBeInstanceOf(ResponseModel);
-  expect(Array.isArray(result.data.tasks)).toBe(true);
-  expect(result.data.total).toBe(1);
-  expect(result.data.page).toBe(1);
-  expect(result.data.limit).toBe(10);
-  expect(result.data.totalPages).toBe(1);
-  expect(result.statusCode).toBe(200);
+    const result = await controller.findAll(undefined, 1, 10);
+    expect(service.findAll).toHaveBeenCalledWith(undefined, 1, 10);
+    expect(result).toBeInstanceOf(ResponseModel);
+    expect(Array.isArray(result.data.tasks)).toBe(true);
+    expect(result.data.total).toBe(1);
+    expect(result.data.page).toBe(1);
+    expect(result.data.limit).toBe(10);
+    expect(result.data.totalPages).toBe(1);
+    expect(result.statusCode).toBe(200);
   });
 
   it('should get a single task', async () => {
