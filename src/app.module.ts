@@ -1,4 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TaskController } from './modules/tasks/presentation/task.controller';
@@ -10,6 +12,14 @@ import { createKeyv } from '@keyv/redis';
 
 @Module({
   imports: [
+     ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync({
       useFactory: async () => {
@@ -34,7 +44,13 @@ import { createKeyv } from '@keyv/redis';
     TypeOrmModule.forFeature([Task]),
   ],
   controllers: [TaskController],
-  providers: [TaskService],
+  providers: [
+    TaskService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

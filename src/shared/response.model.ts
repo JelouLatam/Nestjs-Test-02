@@ -3,5 +3,6 @@ export class ResponseModel<T> {
     public statusCode: number,
     public message: string,
     public data?: T,
+    public errors?: any[],
   ) {}
 }

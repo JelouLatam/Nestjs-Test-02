@@ -1,4 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+import { ThrottlerException } from '@nestjs/throttler';
 import { winstonLogger } from './winston.logger';
 import { ResponseModel } from './response.model';
 import { ApiError, mapValidationErrors } from './api-error.model';
@@ -14,7 +15,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let message = 'Internal server error';
     let errors: ApiError[] = [];
 
-    if (exception instanceof HttpException) {
+    if (exception instanceof ThrottlerException) {
+      status = exception.getStatus();
+      message = exception.message;
+      errors = [{ message:  'Too Many Requests'}];
+    } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse();
       if (typeof res === 'string') {
@@ -49,12 +54,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         errors,
     });
 
-    response.status(status).json(
-      {
-        statusCode: status,
-        message,
-        errors: errors.length > 0 ? errors : undefined
-      }
-    );
+  const responseModel = new ResponseModel<any>(status, message, undefined, errors.length > 0 ? errors : undefined);
+  response.status(status).json(responseModel);
   }
 }
