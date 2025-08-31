@@ -5,10 +5,11 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
-import { winstonLogger } from './winston.logger';
-import { ResponseModel } from './response.model';
+
 import { ApiError, mapValidationErrors } from './api-error.model';
+import { ResponseModel } from './response.model';
 import { HttpExceptionResponse } from './http-exception-response.model';
+import { winstonLogger } from './winston.logger';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -27,6 +28,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse();
+
       if (typeof res === 'string') {
         message = res;
       } else if (typeof res === 'object' && res !== null) {

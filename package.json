@@ -9,15 +9,22 @@
     "build": "tsc -p tsconfig.build.json",
     "start:prod": "npm run build && node dist/main.js",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.10",
+    "@nestjs/testing": "^11.1.6",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "prettier": "^3.6.2"
+    "jest": "^30.1.1",
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1"
   },
   "dependencies": {
     "@keyv/redis": "^5.1.1",
