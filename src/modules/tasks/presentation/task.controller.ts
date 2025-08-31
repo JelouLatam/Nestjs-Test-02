@@ -10,7 +10,9 @@ import {
   Query,
   HttpStatus,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { CreateTaskDto, UpdateTaskDto, UpdateStatusDto } from './dto';
 import { Task, TaskStatus } from '../domain';
@@ -19,6 +21,7 @@ import { ResponseModel } from '../../../shared/models/response.model';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('tasks')
+@UseGuards(AuthGuard('jwt'))
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 

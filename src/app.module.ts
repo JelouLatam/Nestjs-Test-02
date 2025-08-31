@@ -2,10 +2,12 @@ import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TaskController } from './modules/tasks/presentation/task.controller';
 import { TaskService } from './modules/tasks/application/task.service';
 import { Task } from './modules/tasks/domain/task.entity';
+import { User } from './modules/auth/domain/user.entity';
 import { LoggerMiddleware } from './shared/middlewares/logger.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
@@ -33,6 +35,7 @@ import { createKeyv } from '@keyv/redis';
         };
       },
     }),
+    AuthModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -40,10 +43,10 @@ import { createKeyv } from '@keyv/redis';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Task],
+      entities: [Task, User],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Task]),
+    TypeOrmModule.forFeature([Task, User]),
   ],
   controllers: [TaskController],
   providers: [
