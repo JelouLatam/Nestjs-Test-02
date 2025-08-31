@@ -9,11 +9,7 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
 
 export const winstonLogger = createLogger({
   level: 'info',
-  format: combine(
-    timestamp(),
-    errors({ stack: true }),
-    logFormat
-  ),
+  format: combine(timestamp(), errors({ stack: true }), logFormat),
   transports: [
     new transports.Console(),
     new transports.File({ filename: 'logs/app.log' }),

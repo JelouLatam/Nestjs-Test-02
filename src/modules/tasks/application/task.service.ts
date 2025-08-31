@@ -47,14 +47,14 @@ export class TaskService {
     if (result.affected === 0) throw new NotFoundException('Task not found');
     await this.invalidateCache(id);
   }
-  
+
   private async invalidateCache(id?: number) {
     await this.cacheManager.del('/tasks');
     if (id !== undefined) {
       await this.cacheManager.del(`/tasks/${id}`);
     }
   }
-  
+
   async countByStatus(status: TaskStatus): Promise<number> {
     return await this.taskRepository.count({ where: { status } });
   }

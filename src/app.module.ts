@@ -12,7 +12,7 @@ import { createKeyv } from '@keyv/redis';
 
 @Module({
   imports: [
-     ThrottlerModule.forRoot({
+    ThrottlerModule.forRoot({
       throttlers: [
         {
           ttl: 60000,
@@ -25,7 +25,9 @@ import { createKeyv } from '@keyv/redis';
       useFactory: async () => {
         return {
           stores: [
-            createKeyv(`redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`),
+            createKeyv(
+              `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`,
+            ),
           ],
           ttl: 10000,
         };

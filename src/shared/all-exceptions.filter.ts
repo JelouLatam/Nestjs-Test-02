@@ -1,4 +1,9 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+} from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { winstonLogger } from './winston.logger';
 import { ResponseModel } from './response.model';
@@ -18,7 +23,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof ThrottlerException) {
       status = exception.getStatus();
       message = exception.message;
-      errors = [{ message:  'Too Many Requests'}];
+      errors = [{ message: 'Too Many Requests' }];
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse();
@@ -41,20 +46,28 @@ export class AllExceptionsFilter implements ExceptionFilter {
         message = exception.message;
       }
     } else if (exception instanceof Error) {
-        message = exception.message;
-        errors = [{ message }];
+      message = exception.message;
+      errors = [{ message }];
     }
 
-    winstonLogger.error(`[${request.method}] ${request.url} - ${status} - ${message}`, {
+    winstonLogger.error(
+      `[${request.method}] ${request.url} - ${status} - ${message}`,
+      {
         method: request.method,
         url: request.url,
         statusCode: status,
         message,
         stack: exception instanceof Error ? exception.stack : undefined,
         errors,
-    });
+      },
+    );
 
-  const responseModel = new ResponseModel<any>(status, message, undefined, errors.length > 0 ? errors : undefined);
-  response.status(status).json(responseModel);
+    const responseModel = new ResponseModel<null>(
+      status,
+      message,
+      undefined,
+      errors.length > 0 ? errors : undefined,
+    );
+    response.status(status).json(responseModel);
   }
 }

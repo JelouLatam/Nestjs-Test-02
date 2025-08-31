@@ -5,5 +5,5 @@ export interface ApiError {
 }
 
 export function mapValidationErrors(messages: string[]): ApiError[] {
-  return messages.map(msg => ({ message: msg }));
+  return messages.map((msg) => ({ message: msg }));
 }
