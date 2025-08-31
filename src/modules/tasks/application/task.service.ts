@@ -21,11 +21,20 @@ export class TaskService {
     return savedTask;
   }
 
-  async findAll(status?: TaskStatus): Promise<Task[]> {
-    if (status) {
-      return await this.taskRepository.find({ where: { status } });
-    }
-    return await this.taskRepository.find();
+  async findAll(
+    status?: TaskStatus,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ tasks: Task[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const where = status ? { status } : {};
+    const [tasks, total] = await this.taskRepository.findAndCount({
+      where,
+      skip,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return { tasks, total };
   }
 
   async findOne(id: number): Promise<Task> {

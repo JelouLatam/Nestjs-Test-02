@@ -63,6 +63,23 @@ describe('Auth & Task Integration (e2e)', () => {
     jwtToken = res.body.data.access_token;
   });
 
+    it('should get paginated tasks', async () => {
+    for (let i = 0; i < 15; i++) {
+      await request(app.getHttpServer())
+        .post('/tasks')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({ title: `Task ${i + 1}` });
+    }
+    const res = await request(app.getHttpServer())
+      .get('/tasks?page=2&limit=10')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect(200);
+    expect(res.body.data.tasks.length).toBeLessThanOrEqual(10);
+    expect(res.body.data.page).toBe("2");
+    expect(res.body.data.total).toBeGreaterThan(10);
+    expect(res.body.data.totalPages).toBeGreaterThanOrEqual(2);
+  });
+
   it('should create a task with JWT', async () => {
     const res = await request(app.getHttpServer())
       .post('/tasks')

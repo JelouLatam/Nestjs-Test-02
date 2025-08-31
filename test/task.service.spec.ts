@@ -15,6 +15,7 @@ describe('TaskService', () => {
     findOne: jest.fn(),
     delete: jest.fn(),
     count: jest.fn(),
+    findAndCount: jest.fn().mockResolvedValue([[{ id: 1, title: 'Test', status: TaskStatus.PENDING }], 1]),
   };
 
   const mockCache = {
@@ -62,19 +63,20 @@ describe('TaskService', () => {
       mockTaskRepo.find.mockResolvedValue([
         { id: 1, title: 'Test', status: TaskStatus.PENDING } as Task,
       ]);
-      const result = await service.findAll();
-      expect(result.length).toBeGreaterThan(0);
-      expect(mockTaskRepo.find).toHaveBeenCalled();
+  const result = await service.findAll();
+  expect(result.tasks.length).toBeGreaterThan(0);
+  expect(mockTaskRepo.findAndCount).toHaveBeenCalled();
     });
 
     it('should find all tasks by status', async () => {
-      mockTaskRepo.find.mockResolvedValue([
-        { id: 2, title: 'Test2', status: TaskStatus.COMPLETED } as Task,
-      ]);
+      mockTaskRepo.findAndCount.mockResolvedValue([[{ id: 2, title: 'Test2', status: TaskStatus.COMPLETED }], 1]);
       const result = await service.findAll(TaskStatus.COMPLETED);
-      expect(result[0].status).toBe(TaskStatus.COMPLETED);
-      expect(mockTaskRepo.find).toHaveBeenCalledWith({
+      expect(result.tasks[0].status).toBe(TaskStatus.COMPLETED);
+      expect(mockTaskRepo.findAndCount).toHaveBeenCalledWith({
         where: { status: TaskStatus.COMPLETED },
+        skip: 0,
+        take: 10,
+        order: { createdAt: 'DESC' },
       });
     });
   });

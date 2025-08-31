@@ -23,9 +23,16 @@ describe('TaskController', () => {
     updatedAt: fixedDate,
   };
 
+  const mockPaginated = {
+    tasks: [mockTask],
+    total: 1,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+  };
   const mockService = {
     create: jest.fn().mockResolvedValue(mockTask),
-    findAll: jest.fn().mockResolvedValue([mockTask]),
+    findAll: jest.fn().mockResolvedValue(mockPaginated),
     findOne: jest.fn().mockResolvedValue(mockTask),
     update: jest.fn().mockResolvedValue({ ...mockTask, title: 'Updated' }),
     remove: jest.fn().mockResolvedValue(undefined),
@@ -66,11 +73,15 @@ describe('TaskController', () => {
   });
 
   it('should get all tasks', async () => {
-    const result = await controller.findAll();
-    expect(service.findAll).toHaveBeenCalled();
-    expect(result).toBeInstanceOf(ResponseModel);
-    expect(Array.isArray(result.data)).toBe(true);
-    expect(result.statusCode).toBe(200);
+  const result = await controller.findAll(undefined, 1, 10);
+  expect(service.findAll).toHaveBeenCalledWith(undefined, 1, 10);
+  expect(result).toBeInstanceOf(ResponseModel);
+  expect(Array.isArray(result.data.tasks)).toBe(true);
+  expect(result.data.total).toBe(1);
+  expect(result.data.page).toBe(1);
+  expect(result.data.limit).toBe(10);
+  expect(result.data.totalPages).toBe(1);
+  expect(result.statusCode).toBe(200);
   });
 
   it('should get a single task', async () => {
