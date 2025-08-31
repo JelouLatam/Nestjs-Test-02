@@ -66,7 +66,7 @@ describe('TaskService', () => {
       expect(result.length).toBeGreaterThan(0);
       expect(mockTaskRepo.find).toHaveBeenCalled();
     });
-    
+
     it('should find all tasks by status', async () => {
       mockTaskRepo.find.mockResolvedValue([
         { id: 2, title: 'Test2', status: TaskStatus.COMPLETED } as Task,

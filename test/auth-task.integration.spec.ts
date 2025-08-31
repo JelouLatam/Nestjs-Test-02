@@ -104,7 +104,8 @@ describe('Auth & Task Integration (e2e)', () => {
   });
 
   it('should fail with expired JWT', async () => {
-    const expiredToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiaW50ZWdyYXRpb251c2VyIiwiZXhwIjoxMDAwMDAwMDAwfQ.abc123';
+    const expiredToken =
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiaW50ZWdyYXRpb251c2VyIiwiZXhwIjoxMDAwMDAwMDAwfQ.abc123';
     await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', expiredToken)
