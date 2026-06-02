@@ -91,3 +91,90 @@ During your project review, we will focus on the following aspects:
 - As well as the necessary documentation to test the API with sample requests.
 
 Good luck and we look forward to reviewing your work!
+
+## Quick start (local)
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Run in development mode
+
+```bash
+npm run start:dev
+```
+
+## Quick start (docker)
+
+1. Build and start services (requires Docker & docker-compose)
+
+```bash
+docker compose --env-file .env.development up -d --build
+```
+
+2. Stop and remove containers
+
+```bash
+docker compose down
+```
+
+## Environment
+
+Use `.env.example` as a base. Required variables include:
+- `APP_PORT`, `NODE_ENV`
+- `JWT_SECRET`, `JWT_EXPIRES_IN`
+- `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`
+- `REDIS_HOST`, `REDIS_PORT`
+- `MONGO_HOST`, `MONGO_PORT`, `MONGO_DB`, `MONGO_URI` (or app/root user variables)
+
+## Migrations
+
+Migration files are located in `src/database/migrations`. To run migrations manually, use your preferred TypeORM CLI or run SQL scripts against the database container. Example (mysql client):
+
+```bash
+# connect to mysql container
+docker compose exec mysql mysql -u${DB_USERNAME} -p${DB_PASSWORD} ${DB_DATABASE}
+# then run migration SQL if needed
+```
+
+## Testing
+
+Run unit tests:
+
+```bash
+npm run test
+```
+
+Run coverage:
+
+```bash
+npm run test:cov
+```
+
+Coverage report is generated in `coverage/`.
+
+## Sample API requests
+
+Create a task (requires auth token):
+
+```bash
+curl -X POST http://localhost:3000/tasks \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Buy milk"}'
+```
+
+Get tasks:
+
+```bash
+curl http://localhost:3000/tasks
+```
+
+Get metrics (Prometheus):
+
+```bash
+curl http://localhost:3000/metrics
+```
+
