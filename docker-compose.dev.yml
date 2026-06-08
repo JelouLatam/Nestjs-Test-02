@@ -1,0 +1,23 @@
+# Development-specific Docker Compose
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  nestjs-app:
+    build:
+      target: development
+    environment:
+      - NODE_ENV=development
+      - JWT_SECRET=development-secret-key
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev
+    
+  # Add development tools
+  redis-commander:
+    profiles: []  # Remove from profiles to always run in dev
+    
+  adminer:
+    profiles: []  # Remove from profiles to always run in dev
