@@ -1,0 +1,43 @@
+# Technical Test - Luis Solis
+
+This repository contains two separate projects:
+
+## 1. Score Calculator
+A simple Node.js application that calculates scores based on specific rules for integer arrays. This is the first practical exercise requested in the technical test.
+
+To run and test this project:
+```bash
+cd score-calculator
+npm install
+npm start
+```
+
+## 2. Task Management API
+A comprehensive NestJS application for task management with features like authentication, logging, and metrics. This is the main project showcasing backend development skills.
+
+To run and test this project:
+```bash
+cd nestjs-task-app
+npm install
+npm start:dev
+```
+
+### Important Note
+Please refer to each project's individual README file for detailed information about:
+- Project structure
+- Installation steps
+- Usage examples
+- Available endpoints (for the NestJS app)
+- Testing instructions
+- Technical specifications
+
+Both projects are independent and can be run separately. Make sure to read their respective documentation for the best development experience.
+
+### Repository Structure
+```
+repository/
+├── score-calculator/     # First exercise - Score calculation
+└── nestjs-task-app/     # Main project - Task management API
+```
+
+For specific details about each project, please refer to their individual README files.
