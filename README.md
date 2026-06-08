@@ -1,93 +1,135 @@
-# Backend_Developer_NestJS_02
+# Jelou NestJS-Test-02 API
 
-Welcome to the technical test for the NestJS Backend Developer position! In this test, we assess your skills in developing applications using NestJS, with a specific focus on various technical and best practice aspects.
+## Project Overview
 
-## Project Description
+This project is a backend service for a to-do list application built with **NestJS**. It demonstrates best practices in API design, authentication, caching, logging, testing, and documentation.
 
-The goal of this project is to build a backend service for a to-do list application using **NestJS**. The service must be dockerized, follow strict linting rules, include database connections, logging (both to files and MongoDB), and use other advanced components provided by the framework.
+## How Requirements Were Met
 
-## Technical Requirements
+- **NestJS + TypeScript:** The project is fully developed using NestJS and TypeScript.
+- **Dockerization:** Includes `Dockerfile` and `docker-compose.yml` for easy containerization and deployment.
+- **Database:** Uses MySQL for data persistence, configured via environment variables.
+- **Task Management:** Implements CRUD operations for tasks, with endpoints for creation, retrieval, update, and deletion.
+- **DTO Validation:** All request bodies are validated using DTOs and class-validator.
+- **Logging:** HTTP requests are logged to files; application logs and errors are sent to MongoDB using Winston.
+- **Caching:** Frequently accessed endpoints use Redis for caching.
+- **Rate Limiting:** API endpoints are protected against abuse with rate limiting.
+- **Authentication:** JWT-based authentication secures all protected endpoints.
+- **Testing:** Includes unit and integration tests with >80% coverage. Run `npm run test` to verify.
+- **Linting & Formatting:** Uses ESLint and Prettier for code style and quality.
+- **API Documentation:** Swagger UI is available at `/api` for interactive documentation and testing.
+- **Pagination:** The `GET /tasks` endpoint supports pagination and filtering by status.
+- **Task Status Counter:** The `/tasks/status-count` endpoint returns the count of completed and pending tasks.
 
-The application must be developed using the following technologies:
+## API Endpoints
 
-- Framework: NestJS.
-- Programming language: TypeScript.
-- Database: MySQL for data persistence.
-- Docker: The application must be dockerized.
+### Authentication
 
-The project must include:
+- **POST /auth/register**: Register a new user.
+- **POST /auth/login**: Login and obtain a JWT token.
 
-- A controller to manage CRUD operations of the tasks.
-- A service that handles the business logic related to the tasks.
-- Validations for input data in requests using DTOs.
-- Middleware for logging HTTP requests.
-- Logging system with support for files and MongoDB.
-- Caching for the most accessed endpoints using Redis.
-- Rate limiting on the API endpoints.
-- Unit and integration tests with at least 80% coverage.
-- API documentation using the Swagger module (optional).
+### Task Management
 
-### API Endpoints
+- **POST /tasks**: Create a new task.
+- **GET /tasks**: Retrieve all tasks (supports pagination and status filter).
+- **GET /tasks/:id**: Retrieve a specific task by ID.
+- **PUT /tasks/:id**: Update a task.
+- **DELETE /tasks/:id**: Delete a task.
+- **PATCH /tasks/:id/status**: Update the status of a task.
+- **GET /tasks/status-count**: Get count of completed and pending tasks.
 
-#### Task Management
+## How to Run the Application
 
-- **POST** `/tasks`: Create a new task.
-- **GET** `/tasks`: Retrieve all tasks with the ability to filter by status (completed, pending).
-- **GET** `/tasks/:id`: Retrieve a specific task by ID.
-- **PUT** `/tasks/:id`: Update an existing task (title, description, status).
-- **DELETE** `/tasks/:id`: Delete a task by ID.
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Configure environment:**
+   - Set up your database and environment variables (see `.env.example`).
+3. **Start the application:**
+   ```bash
+   npm run start:dev
+   ```
+   Or with Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+4. **Access Swagger API docs:**
+   - Open [http://localhost:3000/api](http://localhost:3000/api) in your browser.
 
-#### Task Status
+## How to Test the Application
 
-- Mark tasks as completed or pending.
-- Include a counter indicating how many tasks are completed and how many are pending.
+- **Run unit and integration tests:**
+  ```bash
+  npm run test
+  ```
+- **Run lint checks:**
+  ```bash
+  npm run lint
+  ```
 
-### Dockerization
+## Authentication Flow
 
-- Provide a `Dockerfile` file to build the NestJS application Docker image.
-- Provide a `docker-compose.yml` file for local deployment of the service.
+1. **Register a new user:**
+   ```http
+   POST /auth/register
+   Content-Type: application/json
+   {
+     "username": "newuser",
+     "password": "pass123",
+     "firstName": "John",
+     "lastName": "Doe",
+     "email": "john@email.com"
+   }
+   ```
+2. **Login to obtain JWT token:**
+   ```http
+   POST /auth/login
+   Content-Type: application/json
+   {
+     "username": "newuser",
+     "password": "pass123"
+   }
+   ```
+   - The response will include an `access_token`.
+3. **Authorize in Swagger UI:**
+   - Click the "Authorize" button and paste your JWT token.
 
-### Logging
+## Example Requests
 
-- Implement a full-featured logging system:
-  - **File-based logging:** Log all HTTP requests and responses.
-  - **MongoDB logging:** Save application logs (e.g. errors, important events) to MongoDB.
-- Integrate **Winston** or another logging library that supports multiple transports.
+### Create a Task
+```http
+POST /tasks
+Content-Type: application/json
+Authorization: Bearer <your_token>
+{
+  "title": "My Task",
+  "description": "Optional description"
+}
+```
 
-### Security
+### Get Paginated Tasks
+```http
+GET /tasks?page=1&limit=10
+Authorization: Bearer <your_token>
+```
 
-- Implement **JWT**-based authentication and secure API endpoints.
-- Protect sensitive data (e.g. database credentials) using environment variables and make sure they are not exposed.
+### Update Task Status
+```http
+PATCH /tasks/1/status
+Content-Type: application/json
+Authorization: Bearer <your_token>
+{
+  "status": "COMPLETED"
+}
+```
 
-### Extras
+### Get Task Status Count
+```http
+GET /tasks/status-count
+Authorization: Bearer <your_token>
+```
 
-- Implement a metrics endpoint to monitor API performance (e.g. using **Prometheus** or similar).
-- Add pagination support for the `GET /tasks` endpoint when there are more than 10 tasks.
-
-## Aspects to Evaluate
-
-During your project review, we will focus on the following aspects:
-
-1. **Working Correctly:** We will verify that the application meets the requirements and works correctly.
-2. **Efficiency:** We will evaluate the efficiency of the code, including performance and resource management.
-3. **Code Readability:** We will review the code for readability, clarity in structure, and consistency in naming conventions.
-4. **Formatting and Code Style:** We will verify the use of tools such as linter to maintain consistent and prettier code formatting.
-5. **Project Organization:** Evaluate the structure and organization of the source code.
-
-## Tasks to Perform
-
-1. Implement the task management service with the functionalities described above.
-2. Create a `Dockerfile` file to build the Docker image of the application.
-3. Create a `docker-compose.yml` file for local deployment of the service.
-4. Perform a code review to evaluate the quality of the code readability.
-5. Use a linter and prettier to ensure the quality and style of the code.
-6. Verify the correct operation of the application.
-
-## Test Delivery
-
-- Deliver your source code by forking the repository provided for the test.
-- The name of the branch must follow the following convention: `test/person-name`.
-- Add clear instructions on how to run and test the application to the end of the `README.md` file.
-- As well as the necessary documentation to test the API with sample requests.
-
-Good luck and we look forward to reviewing your work!
+## Notes
+- All protected endpoints require a valid JWT token.
+- Use Swagger UI for interactive API testing and documentation.
